@@ -41,23 +41,23 @@ export const SolutionSection: React.FC = () => {
   ];
 
   return (
-    <section id="solution" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-[#F8FAFC] relative overflow-hidden">
+    <section id="solution" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-[#F3F6F8] relative overflow-hidden">
       {/* Background radial glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-cyan-100/40 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#168AAD]/10 rounded-full blur-[140px] pointer-events-none -z-10" />
 
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E0F2FE] border border-[#0284C7]/30 text-[#0284C7] text-xs font-mono uppercase tracking-wider mb-4 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E8EDF0] border border-[#168AAD]/30 text-[#168AAD] text-xs font-mono uppercase tracking-wider mb-4 shadow-xs">
             <Zap className="w-3.5 h-3.5" />
             <span>OUR ARCHITECTURAL APPROACH</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-[#0F172A] tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-[#17242B] tracking-tight leading-tight">
             Coordination at the Edge
           </h2>
 
-          <p className="mt-4 text-base sm:text-lg text-[#475569] font-light leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-[#4B6370] font-light leading-relaxed">
             A distributed fleet coordination architecture where autonomous mobile robots share coordination information and make local decisions closer to the point of action.
           </p>
         </div>
@@ -69,30 +69,28 @@ export const SolutionSection: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className={`shazam-card group p-6 sm:p-8 flex flex-col justify-between ${
-                  index === 0 ? "lg:col-span-1" : ""
-                }`}
+                className="shazam-card group p-6 sm:p-8 flex flex-col justify-between bg-white border border-[#E8EDF0]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-[#F0F9FF] border border-[#0284C7]/20 text-[#0284C7] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#0284C7] group-hover:text-white transition-all shadow-xs">
+                    <div className="w-12 h-12 rounded-xl bg-[#E8EDF0] border border-[#CBD5E1] text-[#168AAD] flex items-center justify-center group-hover:bg-[#168AAD] group-hover:text-white transition-all shadow-xs">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                    <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#F3F6F8] text-[#4B6370] border border-[#E8EDF0]">
                       {item.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-heading font-bold text-[#0F172A] mb-3 group-hover:text-[#0284C7] transition-colors">
+                  <h3 className="text-xl font-heading font-bold text-[#17242B] mb-3 group-hover:text-[#168AAD] transition-colors">
                     {item.title}
                   </h3>
 
-                  <p className="text-sm text-[#475569] leading-relaxed">
+                  <p className="text-sm text-[#4B6370] leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono text-[#0284C7]">
+                <div className="mt-6 pt-4 border-t border-[#E8EDF0] flex items-center justify-between text-xs font-mono text-[#168AAD]">
                   <span>SHAZAM CORE // 0{index + 1}</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>
@@ -101,9 +99,9 @@ export const SolutionSection: React.FC = () => {
           })}
 
           {/* Quick Recap Card */}
-          <div className="shazam-card p-6 sm:p-8 bg-gradient-to-br from-[#0F172A] to-[#1E293B] text-white flex flex-col justify-between border-cyan-500/30">
+          <div className="shazam-card p-6 sm:p-8 bg-gradient-to-br from-[#17242B] to-[#0B2733] text-white flex flex-col justify-between border border-[#168AAD]/40">
             <div>
-              <span className="text-[10px] font-mono text-cyan-300 uppercase tracking-widest block mb-3 font-semibold">
+              <span className="text-[10px] font-mono text-[#2EC4C9] uppercase tracking-widest block mb-3 font-semibold">
                 SYSTEM SUMMARY
               </span>
               <h3 className="text-xl font-heading font-bold text-white mb-3">
@@ -115,10 +113,10 @@ export const SolutionSection: React.FC = () => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-700/80 flex items-center justify-between">
-              <span className="text-xs font-mono text-cyan-300">5-ROBOT FLEET SIMULATION</span>
-              <a href="#how-it-works" className="text-xs font-mono text-white hover:text-cyan-300 flex items-center gap-1">
+              <span className="text-xs font-mono text-[#2EC4C9]">5-ROBOT FLEET SIMULATION</span>
+              <a href="#how-it-works" className="text-xs font-mono text-white hover:text-[#2EC4C9] flex items-center gap-1">
                 <span>View Flow</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 text-[#2EC4C9]" />
               </a>
             </div>
           </div>

@@ -1,8 +1,10 @@
 /**
- * Team SHAZAM — SIH26123 Fleet Simulation Data
+ * Team SHAZAM — SIH26123 Smart Warehouse Fleet Simulation Data
  * 
- * Defines the 5 Autonomous Mobile Robots (AMRs) operating inside the
- * simulated smart warehouse environment.
+ * Strict Warehouse Theme:
+ * - 5 AMRs (AMR-01 to AMR-05)
+ * - Exact KPI Simulation Values (Active Robots: 5, Active Tasks: 8, Robots Moving: 3, Conflicts: 1, Status: ONLINE)
+ * - Specific Tasks, Batteries, and Coordination Events
  */
 
 export interface RobotInfo {
@@ -10,200 +12,261 @@ export interface RobotInfo {
   name: string;
   code: string;
   battery: number;
-  batteryState: "optimal" | "nominal" | "warning";
-  status: "In Transit" | "Yielding" | "Navigating" | "Approaching" | "Docked";
+  status: "Moving" | "Waiting" | "Replanning" | "Charging" | "Task Assigned";
+  statusColor: string;
   currentTask: string;
-  origin: string;
+  taskType: "Pick" | "Deliver" | "Charge" | "Inspect";
+  source: string;
   destination: string;
   currentCoord: { x: number; y: number };
   targetCoord: { x: number; y: number };
   pathWaypoints: { x: number; y: number }[];
-  activeRoute: string;
+  alternativeWaypoints?: { x: number; y: number }[];
+  replannedWaypoints?: { x: number; y: number }[];
   headingDeg: number;
   speed: string;
-  payload: string;
-  role: string;
-  edgeCore: string;
-  conflictState: "clear" | "resolving" | "yielded";
+  edgeNodeId: string;
+  conflictState: "nominal" | "conflict_detected" | "waiting";
 }
+
+export const FLEET_KPI = {
+  activeRobots: 5,
+  activeTasks: 8,
+  robotsMoving: 3,
+  conflicts: 1,
+  systemStatus: "ONLINE",
+  simNote: "SIMULATED TELEMETRY VALUES",
+};
 
 export const FLEET_ROBOTS: RobotInfo[] = [
   {
     id: "amr-01",
     name: "AMR-01",
-    code: "FLEET // UNIT-01",
-    battery: 94,
-    batteryState: "optimal",
-    status: "In Transit",
-    currentTask: "Aisle C4 Pallet Transfer",
-    origin: "Inbound Dock 1",
-    destination: "Rack Zone C-04",
-    currentCoord: { x: 22, y: 30 },
-    targetCoord: { x: 22, y: 78 },
+    code: "AMR-01",
+    battery: 82,
+    status: "Moving",
+    statusColor: "#3FA66B", // Green
+    currentTask: "Pick A-14",
+    taskType: "Pick",
+    source: "A-14",
+    destination: "Dock-02",
+    currentCoord: { x: 26, y: 35 },
+    targetCoord: { x: 26, y: 80 },
     pathWaypoints: [
-      { x: 22, y: 30 },
-      { x: 22, y: 50 },
-      { x: 22, y: 78 },
+      { x: 26, y: 35 },
+      { x: 26, y: 55 },
+      { x: 26, y: 80 },
     ],
-    activeRoute: "Dock-1 → Corridor-A → Rack-C04",
     headingDeg: 90,
     speed: "1.2 m/s",
-    payload: "Loaded (140 kg)",
-    role: "Heavy Pallet Mover",
-    edgeCore: "Local Node: ROS2 / FastDDS #1",
-    conflictState: "clear",
+    edgeNodeId: "EDGE-NODE-01",
+    conflictState: "nominal",
   },
   {
     id: "amr-02",
     name: "AMR-02",
-    code: "FLEET // UNIT-02",
-    battery: 88,
-    batteryState: "optimal",
-    status: "Yielding",
-    currentTask: "Zone B Dynamic Rerouting",
-    origin: "Storage Bay B-02",
-    destination: "Sortation Loop 3",
-    currentCoord: { x: 48, y: 46 },
-    targetCoord: { x: 80, y: 46 },
+    code: "AMR-02",
+    battery: 67,
+    status: "Waiting",
+    statusColor: "#F2A93B", // Amber
+    currentTask: "Pick B-07",
+    taskType: "Pick",
+    source: "B-07",
+    destination: "Sort-01",
+    currentCoord: { x: 50, y: 48 },
+    targetCoord: { x: 82, y: 48 },
     pathWaypoints: [
-      { x: 48, y: 46 },
-      { x: 48, y: 62 },
-      { x: 74, y: 62 },
-      { x: 80, y: 46 },
+      { x: 50, y: 48 },
+      { x: 50, y: 64 },
+      { x: 75, y: 64 },
+      { x: 82, y: 48 },
     ],
-    activeRoute: "Bay-B2 → Bypass-South → Sortation-3",
+    alternativeWaypoints: [
+      { x: 50, y: 48 },
+      { x: 50, y: 32 },
+      { x: 82, y: 32 },
+    ],
     headingDeg: 180,
-    speed: "0.0 m/s (Yielded)",
-    payload: "Loaded (85 kg)",
-    role: "Tote Carrier",
-    edgeCore: "Local Node: ROS2 / FastDDS #2",
-    conflictState: "yielded",
+    speed: "0.0 m/s (Yielding)",
+    edgeNodeId: "EDGE-NODE-02",
+    conflictState: "conflict_detected",
   },
   {
     id: "amr-03",
     name: "AMR-03",
-    code: "FLEET // UNIT-03",
-    battery: 76,
-    batteryState: "nominal",
-    status: "In Transit",
-    currentTask: "Aisle D1 Staging Dispatch",
-    origin: "Storage Zone D",
-    destination: "Outbound Bay 2",
-    currentCoord: { x: 72, y: 26 },
-    targetCoord: { x: 72, y: 84 },
+    code: "AMR-03",
+    battery: 91,
+    status: "Replanning",
+    statusColor: "#2496D2", // Path Blue / Cyan
+    currentTask: "Deliver C-21",
+    taskType: "Deliver",
+    source: "C-21",
+    destination: "Dock-01",
+    currentCoord: { x: 74, y: 30 },
+    targetCoord: { x: 74, y: 82 },
     pathWaypoints: [
-      { x: 72, y: 26 },
-      { x: 72, y: 55 },
-      { x: 72, y: 84 },
+      { x: 74, y: 30 },
+      { x: 74, y: 55 },
+      { x: 74, y: 82 },
     ],
-    activeRoute: "Storage-D → Central Trunk → Outbound-2",
+    replannedWaypoints: [
+      { x: 74, y: 30 },
+      { x: 62, y: 30 },
+      { x: 62, y: 70 },
+      { x: 74, y: 82 },
+    ],
     headingDeg: 90,
-    speed: "1.1 m/s",
-    payload: "Empty (Available)",
-    role: "High-Speed Shuttle",
-    edgeCore: "Local Node: ROS2 / FastDDS #3",
-    conflictState: "clear",
+    speed: "0.8 m/s",
+    edgeNodeId: "EDGE-NODE-03",
+    conflictState: "nominal",
   },
   {
     id: "amr-04",
     name: "AMR-04",
-    code: "FLEET // UNIT-04",
-    battery: 82,
-    batteryState: "optimal",
-    status: "Navigating",
-    currentTask: "Cross-Docking Transit",
-    origin: "Inbound Dock 2",
-    destination: "Staging Zone A",
-    currentCoord: { x: 48, y: 34 },
-    targetCoord: { x: 48, y: 72 },
+    code: "AMR-04",
+    battery: 24,
+    status: "Charging",
+    statusColor: "#F2A93B", // Amber
+    currentTask: "Return to Station",
+    taskType: "Charge",
+    source: "Corridor-4",
+    destination: "Station-01",
+    currentCoord: { x: 50, y: 22 },
+    targetCoord: { x: 50, y: 15 },
     pathWaypoints: [
-      { x: 48, y: 34 },
-      { x: 48, y: 46 },
-      { x: 48, y: 72 },
+      { x: 50, y: 22 },
+      { x: 50, y: 15 },
     ],
-    activeRoute: "Dock-2 → Priority Cross IX-04 → Staging-A",
-    headingDeg: 90,
-    speed: "0.9 m/s",
-    payload: "Loaded (210 kg)",
-    role: "Heavy Pallet Mover",
-    edgeCore: "Local Node: ROS2 / FastDDS #4",
-    conflictState: "resolving",
+    headingDeg: 270,
+    speed: "0.0 m/s (Docked)",
+    edgeNodeId: "EDGE-NODE-04",
+    conflictState: "nominal",
   },
   {
     id: "amr-05",
     name: "AMR-05",
-    code: "FLEET // UNIT-05",
-    battery: 91,
-    batteryState: "optimal",
-    status: "Approaching",
-    currentTask: "Zone E Inventory Verification",
-    origin: "Sortation Hub 1",
-    destination: "Rack Zone E-03",
-    currentCoord: { x: 62, y: 76 },
+    code: "AMR-05",
+    battery: 76,
+    status: "Moving",
+    statusColor: "#3FA66B", // Green
+    currentTask: "Deliver A-09",
+    taskType: "Deliver",
+    source: "A-09",
+    destination: "Sort-02",
+    currentCoord: { x: 65, y: 76 },
     targetCoord: { x: 38, y: 76 },
     pathWaypoints: [
-      { x: 62, y: 76 },
+      { x: 65, y: 76 },
       { x: 48, y: 76 },
       { x: 38, y: 76 },
     ],
-    activeRoute: "Sort-1 → Aisle-E Crossway → Rack-E03",
     headingDeg: 270,
-    speed: "1.3 m/s",
-    payload: "Empty (Scanning)",
-    role: "Inventory Scanner AMR",
-    edgeCore: "Local Node: ROS2 / FastDDS #5",
-    conflictState: "clear",
+    speed: "1.1 m/s",
+    edgeNodeId: "EDGE-NODE-05",
+    conflictState: "nominal",
   },
 ];
 
-export interface SimulationEvent {
+export interface WarehouseTask {
   id: string;
-  time: string;
-  type: "reroute" | "conflict" | "yield" | "dds" | "milestone";
-  robotId: string;
-  message: string;
-  severity: "info" | "warning" | "success";
+  robot: string;
+  task: string;
+  source: string;
+  destination: string;
+  status: "In Progress" | "Waiting (Conflict)" | "Replanning" | "Charging" | "Completed";
+  statusColor: string;
 }
 
-export const SIMULATION_EVENTS: SimulationEvent[] = [
+export const ACTIVE_TASKS: WarehouseTask[] = [
+  {
+    id: "TSK-101",
+    robot: "AMR-01",
+    task: "Pick",
+    source: "A-14",
+    destination: "Dock-02",
+    status: "In Progress",
+    statusColor: "#3FA66B",
+  },
+  {
+    id: "TSK-102",
+    robot: "AMR-02",
+    task: "Pick",
+    source: "B-07",
+    destination: "Sort-01",
+    status: "Waiting (Conflict)",
+    statusColor: "#F2A93B",
+  },
+  {
+    id: "TSK-103",
+    robot: "AMR-03",
+    task: "Deliver",
+    source: "C-21",
+    destination: "Dock-01",
+    status: "Replanning",
+    statusColor: "#2496D2",
+  },
+  {
+    id: "TSK-104",
+    robot: "AMR-04",
+    task: "Charge",
+    source: "Corridor-4",
+    destination: "Station-01",
+    status: "Charging",
+    statusColor: "#F2A93B",
+  },
+  {
+    id: "TSK-105",
+    robot: "AMR-05",
+    task: "Deliver",
+    source: "A-09",
+    destination: "Sort-02",
+    status: "In Progress",
+    statusColor: "#3FA66B",
+  },
+];
+
+export interface CoordinationEvent {
+  id: string;
+  timestamp: string;
+  text: string;
+  robot: string;
+  status: "warning" | "info" | "success";
+}
+
+export const COORDINATION_EVENTS: CoordinationEvent[] = [
   {
     id: "evt-01",
-    time: "T+14:02.4",
-    type: "reroute",
-    robotId: "AMR-02",
-    message: "AMR-02 route dynamically updated via D* Lite: avoidance path engaged around obstructed Aisle B-2",
-    severity: "info",
+    timestamp: "10:42:19",
+    text: "AMR-02 resumed route.",
+    robot: "AMR-02",
+    status: "success",
   },
   {
     id: "evt-02",
-    time: "T+14:01.8",
-    type: "conflict",
-    robotId: "AMR-02 & AMR-04",
-    message: "Path conflict detected at Intersection IX-04 between AMR-02 & AMR-04",
-    severity: "warning",
+    timestamp: "10:42:18",
+    text: "Intersection cleared.",
+    robot: "Intersection IX-04",
+    status: "info",
   },
   {
     id: "evt-03",
-    time: "T+14:01.1",
-    type: "yield",
-    robotId: "AMR-02",
-    message: "AMR-02 waiting for intersection: yielding right-of-way to higher-priority payload on AMR-04",
-    severity: "warning",
+    timestamp: "10:42:16",
+    text: "AMR-02 assigned temporary wait state.",
+    robot: "AMR-02",
+    status: "warning",
   },
   {
     id: "evt-04",
-    time: "T+13:59.6",
-    type: "dds",
-    robotId: "Fleet Mesh",
-    message: "Fast DDS peer state exchange synchronized across all 5 active AMR nodes",
-    severity: "success",
+    timestamp: "10:42:15",
+    text: "Potential path conflict detected.",
+    robot: "AMR-02 & AMR-01",
+    status: "warning",
   },
   {
     id: "evt-05",
-    time: "T+13:58.2",
-    type: "milestone",
-    robotId: "AMR-01",
-    message: "AMR-01 cleared Waypoint WP-03 in Corridor-A; continuing along planned trajectory to Rack-C04",
-    severity: "info",
+    timestamp: "10:42:13",
+    text: "AMR-02 approaching shared intersection.",
+    robot: "AMR-02",
+    status: "info",
   },
 ];

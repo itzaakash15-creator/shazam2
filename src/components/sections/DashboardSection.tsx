@@ -1,296 +1,848 @@
-import React, { useState } from "react";
-import { FLEET_ROBOTS, SIMULATION_EVENTS, RobotInfo } from "../../data/fleet";
-import { Activity, Battery, Compass, Terminal, ShieldAlert, Cpu, RefreshCw, AlertTriangle, CheckCircle, Wifi } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  FLEET_ROBOTS,
+  FLEET_KPI,
+  ACTIVE_TASKS,
+  COORDINATION_EVENTS,
+  RobotInfo,
+} from "../../data/fleet";
+import {
+  Activity,
+  Battery,
+  BatteryCharging,
+  Compass,
+  AlertTriangle,
+  CheckCircle2,
+  Cpu,
+  Layers,
+  MapPin,
+  Pause,
+  Play,
+  RefreshCw,
+  Server,
+  Zap,
+  Radio,
+  Boxes,
+  ShieldAlert,
+  ArrowRight,
+  HardDrive,
+  Eye,
+  Sliders,
+} from "lucide-react";
 
 export const DashboardSection: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<string>("map");
   const [selectedRobotId, setSelectedRobotId] = useState<string>("amr-02");
-  const [filterEvent, setFilterEvent] = useState<string>("all");
+  const [isSimRunning, setIsSimRunning] = useState<boolean>(true);
+  const [showAltPaths, setShowAltPaths] = useState<boolean>(true);
+  const [simStep, setSimStep] = useState<number>(0);
 
-  const selectedRobot = FLEET_ROBOTS.find((r) => r.id === selectedRobotId) || FLEET_ROBOTS[0];
+  // Subtle live position pulse for the 5 AMRs
+  useEffect(() => {
+    if (!isSimRunning) return;
+    const interval = setInterval(() => {
+      setSimStep((prev) => (prev + 1) % 100);
+    }, 1200);
+    return () => clearInterval(interval);
+  }, [isSimRunning]);
 
-  const filteredEvents = SIMULATION_EVENTS.filter((evt) => {
-    if (filterEvent === "all") return true;
-    return evt.type === filterEvent;
-  });
+  const selectedRobot =
+    FLEET_ROBOTS.find((r) => r.id === selectedRobotId) || FLEET_ROBOTS[0];
 
   return (
-    <section id="dashboard" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-[#07101E] text-slate-200 relative overflow-hidden border-t border-cyan-500/20">
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none -z-10" />
-
-      <div className="max-w-7xl mx-auto">
+    <section
+      id="dashboard"
+      className="py-16 sm:py-24 px-3 sm:px-6 lg:px-8 bg-[#F3F6F8] text-[#17242B] relative overflow-hidden border-t border-[#E8EDF0]"
+    >
+      <div className="max-w-[1400px] mx-auto">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950/80 border border-cyan-400/40 text-cyan-300 text-xs font-mono uppercase tracking-wider mb-4">
-            <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-            <span>INDUSTRIAL ROBOTICS CONTROL INTERFACE</span>
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8EDF0] border border-[#168AAD]/30 text-[#168AAD] text-xs font-mono uppercase tracking-wider mb-3">
+            <Radio className="w-3.5 h-3.5" />
+            <span>OPERATIONAL DIGITAL TWIN</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-white tracking-tight leading-tight">
-            Live Warehouse Coordination Dashboard
+          <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-[#17242B] tracking-tight leading-tight">
+            Smart Warehouse Coordination Center
           </h2>
 
-          <p className="mt-4 text-base sm:text-lg text-slate-300 font-light leading-relaxed">
-            A specialized fleet operations view displaying real-time coordinate positions, dynamic path reservations, battery states, and decentralized coordination events.
+          <p className="mt-3 text-sm sm:text-base text-[#4B6370] font-light leading-relaxed">
+            Real-time digital twin monitoring 5 Autonomous Mobile Robots negotiating intersections, dynamic D* Lite route adjustments, and decentralized edge arbitration.
           </p>
 
-          <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-xs font-mono text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>GAZEBO SIMULATION STREAM • 5 AMRs CONCURRENT</span>
+          <div className="mt-3 inline-flex items-center gap-2 text-xs font-mono text-[#4B6370] bg-white px-3.5 py-1 rounded-full border border-[#E8EDF0] shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-[#3FA66B] animate-pulse" />
+            <span className="font-semibold text-[#17242B]">DEMO ENVIRONMENT:</span>
+            <span>GAZEBO MULTI-AGENT SIMULATION</span>
           </div>
         </div>
 
-        {/* Industrial Dashboard Master Frame */}
-        <div className="rounded-2xl border border-cyan-500/30 bg-[#0A1324] shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden">
-          {/* Top Console Telemetry Header */}
-          <div className="px-6 py-4 bg-[#08101E] border-b border-cyan-500/20 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+        {/* Master Command Center Frame */}
+        <div className="rounded-2xl border border-[#E8EDF0] bg-white shadow-lg overflow-hidden flex flex-col">
+          {/* ========================================================= */}
+          {/* 8. TOP BAR                                                */}
+          {/* ========================================================= */}
+          <div className="px-5 py-3.5 bg-[#17242B] text-white flex flex-wrap items-center justify-between gap-3 border-b border-[#0B2733]">
+            {/* Left Brand & Problem Statement */}
             <div className="flex items-center gap-3">
-              <span className="text-white font-bold flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>FLEET SUPERVISOR CONSOLE</span>
+              <span className="font-heading font-bold text-base tracking-wider text-white">
+                SHAZAM
               </span>
-              <span className="text-slate-600">|</span>
-              <span className="text-cyan-300">ACTIVE FLEET: 5 ROBOTS</span>
-              <span className="text-slate-600">|</span>
-              <span className="text-slate-400">DDS DOMAIN: 0</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#168AAD]/25 text-[#2EC4C9] border border-[#2EC4C9]/40 font-semibold">
+                SIH26123
+              </span>
             </div>
 
-            <div className="flex items-center gap-4 text-slate-400">
-              <span className="flex items-center gap-1.5 text-emerald-400">
-                <Wifi className="w-3.5 h-3.5" />
-                <span>MESH SYNC: NOMINAL</span>
+            {/* Center Command Center Label */}
+            <div className="hidden md:flex items-center gap-2 text-xs font-mono tracking-widest text-[#E8EDF0] uppercase font-semibold">
+              <Activity className="w-4 h-4 text-[#2EC4C9]" />
+              <span>SMART WAREHOUSE CONTROL</span>
+            </div>
+
+            {/* Right System Status */}
+            <div className="flex items-center gap-3 font-mono text-xs">
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B2733] border border-[#3FA66B]/50 text-[#3FA66B] text-[11px] font-bold">
+                <span className="w-2 h-2 rounded-full bg-[#3FA66B] animate-pulse" />
+                <span>● SYSTEM ONLINE</span>
               </span>
-              <span>SIM TIME: T+14:04.2</span>
+              <span className="text-slate-400 text-[11px] hidden sm:inline">
+                SIM TIME: 10:42:19
+              </span>
             </div>
           </div>
 
-          {/* 5 Robot Status Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-slate-800 bg-[#091528] border-b border-cyan-500/20">
-            {FLEET_ROBOTS.map((bot) => {
-              const isSelected = selectedRobotId === bot.id;
-              return (
-                <button
-                  key={bot.id}
-                  onClick={() => setSelectedRobotId(bot.id)}
-                  className={`p-4 text-left transition-all cursor-pointer relative ${
-                    isSelected ? "bg-cyan-950/40" : "hover:bg-slate-900/60"
-                  }`}
-                >
-                  {isSelected && (
-                    <div className="absolute top-0 inset-x-0 h-[2px] bg-cyan-400" />
-                  )}
+          {/* ========================================================= */}
+          {/* 10. TOP KPI BAR (Simulation Values)                       */}
+          {/* ========================================================= */}
+          <div className="px-5 py-3 bg-[#E8EDF0]/70 border-b border-[#E8EDF0] grid grid-cols-2 sm:grid-cols-5 gap-3 font-mono text-xs">
+            <div className="p-2.5 rounded-lg bg-white border border-[#E8EDF0] shadow-xs">
+              <span className="text-[10px] text-[#4B6370] block">ACTIVE ROBOTS</span>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-xl font-bold text-[#17242B] font-heading">
+                  {FLEET_KPI.activeRobots}
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#E8EDF0] text-[#168AAD] font-semibold">
+                  SIM
+                </span>
+              </div>
+            </div>
 
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono font-bold text-white text-sm">
-                      {bot.name}
-                    </span>
-                    <span
-                      className={`text-[9px] font-mono px-2 py-0.5 rounded-full font-semibold ${
-                        bot.status === "Yielding"
-                          ? "bg-amber-950/80 text-amber-300 border border-amber-500/40"
-                          : "bg-emerald-950/80 text-emerald-300 border border-emerald-500/40"
+            <div className="p-2.5 rounded-lg bg-white border border-[#E8EDF0] shadow-xs">
+              <span className="text-[10px] text-[#4B6370] block">ACTIVE TASKS</span>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-xl font-bold text-[#17242B] font-heading">
+                  {FLEET_KPI.activeTasks}
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#E8EDF0] text-[#4B6370]">
+                  QUEUED
+                </span>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-white border border-[#E8EDF0] shadow-xs">
+              <span className="text-[10px] text-[#4B6370] block">ROBOTS MOVING</span>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-xl font-bold text-[#3FA66B] font-heading">
+                  {FLEET_KPI.robotsMoving}
+                </span>
+                <span className="text-[10px] text-[#3FA66B] font-bold">● ACTIVE</span>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-white border border-[#E8EDF0] shadow-xs">
+              <span className="text-[10px] text-[#4B6370] block">CONFLICTS</span>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-xl font-bold text-[#F2A93B] font-heading">
+                  {FLEET_KPI.conflicts}
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-[#F2A93B] border border-amber-200 font-bold">
+                  YIELDING
+                </span>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-white border border-[#E8EDF0] shadow-xs col-span-2 sm:col-span-1">
+              <span className="text-[10px] text-[#4B6370] block">SYSTEM STATUS</span>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-sm font-bold text-[#3FA66B]">
+                  {FLEET_KPI.systemStatus}
+                </span>
+                <span className="text-[9px] text-[#4B6370]">SIMULATION</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Dashboard Layout: Left Sidebar + Center Workspace + Right Fleet Status */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
+            {/* ========================================================= */}
+            {/* 9. LEFT SIDEBAR                                           */}
+            {/* ========================================================= */}
+            <aside className="lg:col-span-2 bg-[#0B2733] text-white p-4 flex flex-col justify-between border-r border-[#17242B]">
+              <div className="space-y-1 font-mono text-xs">
+                <div className="text-[10px] font-bold text-[#2EC4C9] tracking-wider uppercase px-2 mb-2">
+                  NAVIGATION
+                </div>
+
+                {[
+                  { id: "overview", label: "OVERVIEW", icon: Activity },
+                  { id: "fleet", label: "FLEET", icon: Radio },
+                  { id: "map", label: "WAREHOUSE MAP", icon: Compass },
+                  { id: "tasks", label: "TASKS", icon: Boxes },
+                  { id: "path", label: "PATH PLANNING", icon: RefreshCw },
+                  { id: "conflicts", label: "CONFLICTS", icon: ShieldAlert },
+                  { id: "system", label: "SYSTEM", icon: Server },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all text-left cursor-pointer ${
+                        isActive
+                          ? "bg-[#168AAD] text-white font-bold shadow-xs"
+                          : "text-slate-300 hover:bg-white/10 hover:text-white"
                       }`}
                     >
-                      {bot.status}
+                      <Icon className="w-3.5 h-3.5 shrink-0 text-[#2EC4C9]" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Edge AI Callout in Sidebar */}
+              <div className="mt-6 p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300">
+                <div className="flex items-center gap-1.5 text-[#2EC4C9] font-bold text-xs mb-1">
+                  <Cpu className="w-3.5 h-3.5" />
+                  <span>EDGE NODE // 02</span>
+                </div>
+                <p className="text-[10px] text-slate-400 leading-snug">
+                  Local arbitration active. Decisions made closer to the fleet.
+                </p>
+              </div>
+            </aside>
+
+            {/* ========================================================= */}
+            {/* 11. MAIN WAREHOUSE MAP (Center Area)                      */}
+            {/* ========================================================= */}
+            <main className="lg:col-span-7 p-4 sm:p-6 bg-white flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#E8EDF0]">
+              {/* Map Header & Controls */}
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[#E8EDF0] text-xs font-mono">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-heading font-extrabold text-[#17242B]">
+                      LIVE WAREHOUSE MAP
+                    </h3>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E8EDF0] text-[#168AAD] font-bold uppercase">
+                      SIMULATION
                     </span>
                   </div>
-
-                  <p className="text-xs text-slate-300 font-mono truncate mb-2">
-                    {bot.currentTask}
-                  </p>
-
-                  <div className="space-y-1.5 font-mono text-[11px]">
-                    <div className="flex items-center justify-between text-slate-400">
-                      <span>BATTERY:</span>
-                      <span className="text-emerald-400 font-bold">{bot.battery}%</span>
-                    </div>
-                    {/* Battery indicator bar */}
-                    <div className="w-full h-1 rounded-full bg-slate-800 overflow-hidden">
-                      <div
-                        className="h-full bg-emerald-400 rounded-full"
-                        style={{ width: `${bot.battery}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-slate-400 text-[10px] pt-1">
-                      <span>POS:</span>
-                      <span className="text-cyan-300">{bot.currentCoord.x}m, {bot.currentCoord.y}m</span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Main Dashboard Workspace: Map & Events Log */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
-            {/* Left 8 Cols: Large Interactive Warehouse Map */}
-            <div className="lg:col-span-8 p-6 flex flex-col justify-between">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 text-xs font-mono text-slate-400">
-                <div className="flex items-center gap-2">
-                  <Compass className="w-4 h-4 text-cyan-400" />
-                  <span className="text-white font-bold">WAREHOUSE TOP-DOWN TELEMETRY</span>
-                  <span className="text-cyan-400">[GAZEBO 2D PROJECTION]</span>
+                  <span className="text-[11px] text-[#4B6370]">
+                    Top-down operational twin with D* Lite active path lines
+                  </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                    <span>Active AMR</span>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-amber-400" />
-                    <span>Intersection Conflict</span>
-                  </span>
+
+                {/* Map Control Buttons */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowAltPaths(!showAltPaths)}
+                    className={`px-2.5 py-1 rounded text-[11px] font-mono border transition-all cursor-pointer ${
+                      showAltPaths
+                        ? "bg-[#E8EDF0] text-[#168AAD] border-[#168AAD]/40 font-semibold"
+                        : "bg-white text-slate-500 border-slate-200"
+                    }`}
+                    title="Toggle Alternative & Replanned Paths"
+                  >
+                    ALT PATHS
+                  </button>
+
+                  <button
+                    onClick={() => setIsSimRunning(!isSimRunning)}
+                    className="p-1.5 rounded-lg bg-[#E8EDF0] hover:bg-[#CBD5E1] text-[#17242B] border border-[#CBD5E1] transition-all cursor-pointer"
+                    title={isSimRunning ? "Pause Simulation Stream" : "Resume Simulation"}
+                  >
+                    {isSimRunning ? (
+                      <Pause className="w-3.5 h-3.5 text-[#168AAD]" />
+                    ) : (
+                      <Play className="w-3.5 h-3.5 text-[#3FA66B]" />
+                    )}
+                  </button>
                 </div>
               </div>
 
-              {/* Large Warehouse Schematic Map */}
-              <div className="relative aspect-[16/10] w-full rounded-xl bg-[#060D1A] border border-cyan-500/25 p-4 overflow-hidden">
-                <div className="absolute inset-0 warehouse-grid-dark opacity-40 pointer-events-none" />
+              {/* Conflict Alert Banner above Map */}
+              <div className="mb-3 px-3 py-2 rounded-lg bg-amber-50 border border-[#F2A93B]/40 flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2 text-[#17242B]">
+                  <AlertTriangle className="w-4 h-4 text-[#F2A93B] shrink-0" />
+                  <span className="font-bold text-[#F2A93B]">CONFLICT DETECTED:</span>
+                  <span>Intersection IX-04 — AMR-02 assigned temporary wait state.</span>
+                </div>
+                <span className="text-[10px] text-[#168AAD] font-semibold hidden sm:inline">
+                  LOCAL ARBITRATION ACTIVE
+                </span>
+              </div>
 
-                <svg className="w-full h-full" viewBox="0 0 1000 600">
-                  {/* Warehouse Boundary Wall */}
-                  <rect x="20" y="20" width="960" height="560" fill="none" stroke="rgba(6,182,212,0.25)" strokeWidth="2" />
+              {/* Digital Warehouse Floor Plan SVG Canvas */}
+              <div className="relative aspect-[16/10] w-full rounded-xl bg-[#F8FAFB] border border-[#E8EDF0] p-3 overflow-hidden shadow-inner flex flex-col justify-between">
+                {/* Subtle warehouse floor grid background */}
+                <div className="absolute inset-0 warehouse-grid-light opacity-60 pointer-events-none" />
 
-                  {/* High-Bay Storage Racks */}
+                <svg className="w-full h-full" viewBox="0 0 1000 620">
+                  {/* Warehouse Outer Wall */}
+                  <rect
+                    x="15"
+                    y="15"
+                    width="970"
+                    height="590"
+                    fill="none"
+                    stroke="#CBD5E1"
+                    strokeWidth="2"
+                    rx="6"
+                  />
+
+                  {/* Floor Safety Aisle Markings */}
+                  <line x1="120" y1="310" x2="880" y2="310" stroke="#E2E8F0" strokeWidth="20" strokeLinecap="round" />
+                  <line x1="260" y1="60" x2="260" y2="560" stroke="#E2E8F0" strokeWidth="18" strokeLinecap="round" />
+                  <line x1="500" y1="60" x2="500" y2="560" stroke="#E2E8F0" strokeWidth="18" strokeLinecap="round" />
+                  <line x1="740" y1="60" x2="740" y2="560" stroke="#E2E8F0" strokeWidth="18" strokeLinecap="round" />
+
+                  {/* Warehouse Storage Racks (Clean Soft Gray Industrial Architecture) */}
                   {[
-                    { x: 140, y: 100, w: 80, h: 400, label: "BAY-A" },
-                    { x: 320, y: 100, w: 80, h: 400, label: "BAY-B" },
-                    { x: 500, y: 100, w: 80, h: 400, label: "BAY-C" },
-                    { x: 680, y: 100, w: 80, h: 400, label: "BAY-D" },
-                  ].map((bay) => (
-                    <g key={bay.label}>
-                      <rect x={bay.x} y={bay.y} width={bay.w} height={bay.h} fill="#0B1A2F" stroke="rgba(6,182,212,0.4)" strokeWidth="1" rx="4" />
-                      <text x={bay.x + bay.w / 2} y={bay.y + bay.h / 2} fill="#64748B" fontSize="14" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-                        {bay.label}
+                    { x: 140, y: 70, w: 70, h: 200, label: "RACK A-14", aisle: "AISLE 01" },
+                    { x: 140, y: 350, w: 70, h: 200, label: "RACK A-09", aisle: "AISLE 02" },
+                    { x: 380, y: 70, w: 70, h: 200, label: "RACK B-07", aisle: "AISLE 03" },
+                    { x: 380, y: 350, w: 70, h: 200, label: "RACK B-12", aisle: "AISLE 04" },
+                    { x: 620, y: 70, w: 70, h: 200, label: "RACK C-21", aisle: "AISLE 05" },
+                    { x: 620, y: 350, w: 70, h: 200, label: "RACK C-04", aisle: "AISLE 06" },
+                  ].map((rk) => (
+                    <g key={rk.label}>
+                      <rect
+                        x={rk.x}
+                        y={rk.y}
+                        width={rk.w}
+                        height={rk.h}
+                        fill="#FFFFFF"
+                        stroke="#CBD5E1"
+                        strokeWidth="1.5"
+                        rx="4"
+                      />
+                      {/* Shelving slots */}
+                      {[1, 2, 3, 4, 5].map((slot) => (
+                        <line
+                          key={slot}
+                          x1={rk.x}
+                          y1={rk.y + slot * 33}
+                          x2={rk.x + rk.w}
+                          y2={rk.y + slot * 33}
+                          stroke="#E2E8F0"
+                          strokeWidth="1"
+                        />
+                      ))}
+                      <text
+                        x={rk.x + rk.w / 2}
+                        y={rk.y + rk.h / 2}
+                        fill="#4B6370"
+                        fontSize="10"
+                        fontFamily="monospace"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
+                        {rk.label}
                       </text>
                     </g>
                   ))}
 
+                  {/* Inbound / Outbound Loading Docks */}
+                  <g>
+                    <rect x="25" y="70" width="70" height="90" fill="#E8EDF0" stroke="#168AAD" strokeWidth="1.5" rx="4" />
+                    <text x="60" y="115" fill="#168AAD" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                      DOCK-01
+                    </text>
+                    <text x="60" y="130" fill="#4B6370" fontSize="8" fontFamily="monospace" textAnchor="middle">
+                      INBOUND
+                    </text>
+
+                    <rect x="25" y="460" width="70" height="90" fill="#E8EDF0" stroke="#168AAD" strokeWidth="1.5" rx="4" />
+                    <text x="60" y="505" fill="#168AAD" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                      DOCK-02
+                    </text>
+                    <text x="60" y="520" fill="#4B6370" fontSize="8" fontFamily="monospace" textAnchor="middle">
+                      INBOUND
+                    </text>
+                  </g>
+
+                  {/* Outbound Sortation & Drop Zones */}
+                  <g>
+                    <rect x="905" y="70" width="70" height="90" fill="#E8EDF0" stroke="#3FA66B" strokeWidth="1.5" rx="4" />
+                    <text x="940" y="115" fill="#3FA66B" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                      SORT-01
+                    </text>
+                    <text x="940" y="130" fill="#4B6370" fontSize="8" fontFamily="monospace" textAnchor="middle">
+                      PICKUP
+                    </text>
+
+                    <rect x="905" y="460" width="70" height="90" fill="#E8EDF0" stroke="#3FA66B" strokeWidth="1.5" rx="4" />
+                    <text x="940" y="505" fill="#3FA66B" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                      SORT-02
+                    </text>
+                    <text x="940" y="520" fill="#4B6370" fontSize="8" fontFamily="monospace" textAnchor="middle">
+                      PICKUP
+                    </text>
+                  </g>
+
+                  {/* Charging Stations */}
+                  <g>
+                    <rect x="470" y="30" width="60" height="40" fill="#FFFBEB" stroke="#F2A93B" strokeWidth="1.5" rx="4" />
+                    <text x="500" y="52" fill="#B45309" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                      STATION-01
+                    </text>
+                    <text x="500" y="63" fill="#B45309" fontSize="7" fontFamily="monospace" textAnchor="middle">
+                      [CHARGING]
+                    </text>
+                  </g>
+
                   {/* Intersections (IX-01 to IX-04) */}
-                  <rect x="420" y="260" width="60" height="80" fill="rgba(245, 158, 11, 0.15)" stroke="#F59E0B" strokeWidth="1" strokeDasharray="3,3" />
-                  <text x="450" y="305" fill="#F59E0B" fontSize="10" fontFamily="monospace" textAnchor="middle">IX-04</text>
+                  {[
+                    { x: 260, y: 310, label: "IX-01" },
+                    { x: 500, y: 310, label: "IX-04" },
+                    { x: 740, y: 310, label: "IX-03" },
+                  ].map((ix) => (
+                    <g key={ix.label}>
+                      <circle
+                        cx={ix.x}
+                        cy={ix.y}
+                        r="24"
+                        fill={ix.label === "IX-04" ? "rgba(242, 169, 59, 0.15)" : "none"}
+                        stroke={ix.label === "IX-04" ? "#F2A93B" : "#CBD5E1"}
+                        strokeWidth="1.5"
+                        strokeDasharray={ix.label === "IX-04" ? "4,4" : "2,2"}
+                      />
+                      <text
+                        x={ix.x}
+                        y={ix.y + 3}
+                        fill={ix.label === "IX-04" ? "#B45309" : "#64748B"}
+                        fontSize="9"
+                        fontFamily="monospace"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
+                        {ix.label}
+                      </text>
+                    </g>
+                  ))}
 
-                  {/* Inbound Docks */}
-                  <rect x="30" y="80" width="70" height="90" fill="rgba(2, 132, 199, 0.2)" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="65" y="130" fill="#38BDF8" fontSize="10" fontFamily="monospace" textAnchor="middle">DOCK-1</text>
+                  {/* Dynamic Obstacle (Muted Dark Gray) */}
+                  <g>
+                    <rect x="715" y="340" width="50" height="30" fill="#17242B" stroke="#64748B" strokeWidth="1" rx="3" />
+                    <text x="740" y="358" fill="#FFFFFF" fontSize="8" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                      OBSTACLE
+                    </text>
+                  </g>
 
-                  <rect x="30" y="430" width="70" height="90" fill="rgba(2, 132, 199, 0.2)" stroke="#38BDF8" strokeWidth="1" />
-                  <text x="65" y="480" fill="#38BDF8" fontSize="10" fontFamily="monospace" textAnchor="middle">DOCK-2</text>
+                  {/* PATH VISUALIZATIONS */}
+                  {/* AMR-01: Solid Current Path (Cyan/Blue #2496D2) */}
+                  <polyline
+                    points="260,210 260,310 260,500"
+                    fill="none"
+                    stroke="#2496D2"
+                    strokeWidth="3"
+                  />
+                  {/* Destination Marker */}
+                  <circle cx="260" cy="500" r="4" fill="#2496D2" />
 
-                  {/* Outbound Sortation Stations */}
-                  <rect x="880" y="80" width="80" height="90" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" strokeWidth="1" />
-                  <text x="920" y="130" fill="#10B981" fontSize="10" fontFamily="monospace" textAnchor="middle">SORT-1</text>
+                  {/* AMR-02: Conflict & Waiting Path */}
+                  <polyline
+                    points="500,300 500,390 740,390"
+                    fill="none"
+                    stroke="#F2A93B"
+                    strokeWidth="2.5"
+                    strokeDasharray="4,4"
+                  />
 
-                  <rect x="880" y="430" width="80" height="90" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" strokeWidth="1" />
-                  <text x="920" y="480" fill="#10B981" fontSize="10" fontFamily="monospace" textAnchor="middle">SORT-2</text>
+                  {/* Alternative Path (Subtle Dotted Line) */}
+                  {showAltPaths && (
+                    <polyline
+                      points="500,290 380,290 380,480 740,480"
+                      fill="none"
+                      stroke="#168AAD"
+                      strokeWidth="2"
+                      strokeDasharray="3,5"
+                      opacity="0.7"
+                    />
+                  )}
 
-                  {/* Active Trajectories */}
+                  {/* AMR-03: Replanned Path (Brighter Highlighted Route via D* Lite) */}
+                  {showAltPaths && (
+                    <polyline
+                      points="740,190 820,190 820,430 740,510"
+                      fill="none"
+                      stroke="#2EC4C9"
+                      strokeWidth="3.5"
+                    />
+                  )}
+
+                  {/* AMR-04: Charging Path */}
+                  <polyline
+                    points="500,140 500,70"
+                    fill="none"
+                    stroke="#CBD5E1"
+                    strokeWidth="2"
+                    strokeDasharray="2,2"
+                  />
+
+                  {/* AMR-05: Current Active Path */}
+                  <polyline
+                    points="650,470 500,470 380,470"
+                    fill="none"
+                    stroke="#2496D2"
+                    strokeWidth="3"
+                  />
+
+                  {/* ROBOT VISUALIZATION: 5 AMRs as Clean Circular / Rounded Indicators */}
                   {FLEET_ROBOTS.map((bot) => {
-                    const isFocus = bot.id === selectedRobotId;
-                    return (
-                      <g key={`path-${bot.id}`}>
-                        <polyline
-                          points={bot.pathWaypoints.map((p) => `${p.x * 9.6},${p.y * 5.6}`).join(" ")}
-                          fill="none"
-                          stroke={isFocus ? "#06B6D4" : "rgba(6,182,212,0.3)"}
-                          strokeWidth={isFocus ? "3" : "1.5"}
-                          strokeDasharray={isFocus ? "6,4" : "4,4"}
-                        />
-                      </g>
-                    );
-                  })}
-
-                  {/* 5 Robots */}
-                  {FLEET_ROBOTS.map((bot) => {
-                    const isFocus = bot.id === selectedRobotId;
-                    const bx = bot.currentCoord.x * 9.6;
-                    const by = bot.currentCoord.y * 5.6;
+                    const isSelected = selectedRobotId === bot.id;
+                    const bx = bot.currentCoord.x * 10;
+                    const by = bot.currentCoord.y * 6.2;
 
                     return (
-                      <g key={bot.id} className="cursor-pointer" onClick={() => setSelectedRobotId(bot.id)}>
-                        {/* Lidar circle */}
-                        <circle cx={bx} cy={by} r={isFocus ? "32" : "20"} fill={isFocus ? "rgba(6,182,212,0.2)" : "rgba(6,182,212,0.06)"} stroke="rgba(6,182,212,0.4)" strokeWidth="1" />
+                      <g
+                        key={bot.id}
+                        className="cursor-pointer"
+                        onClick={() => setSelectedRobotId(bot.id)}
+                      >
+                        {/* Selected Soft Halo */}
+                        {isSelected && (
+                          <circle
+                            cx={bx}
+                            cy={by}
+                            r="22"
+                            fill="rgba(22, 138, 173, 0.15)"
+                            stroke="#168AAD"
+                            strokeWidth="1.5"
+                          />
+                        )}
+
                         {/* Robot Body */}
-                        <rect x={bx - 14} y={by - 10} width="28" height="20" rx="3" fill={isFocus ? "#0284C7" : "#0F1E36"} stroke={isFocus ? "#FFFFFF" : "#38BDF8"} strokeWidth={isFocus ? "2" : "1.2"} />
-                        {/* Status Heading Dot */}
-                        <circle cx={bx + 6} cy={by} r="3" fill={bot.status === "Yielding" ? "#F59E0B" : "#10B981"} />
-                        {/* Label */}
-                        <text x={bx} y={by - 16} fill={isFocus ? "#FFFFFF" : "#94A3B8"} fontSize="11" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                        <circle
+                          cx={bx}
+                          cy={by}
+                          r="14"
+                          fill="#FFFFFF"
+                          stroke={bot.statusColor}
+                          strokeWidth="2.5"
+                        />
+
+                        {/* Heading Direction Arrow */}
+                        <circle
+                          cx={
+                            bx + (bot.headingDeg === 90 ? 0 : bot.headingDeg === 180 ? -8 : 8)
+                          }
+                          cy={
+                            by + (bot.headingDeg === 90 ? 8 : bot.headingDeg === 270 ? -8 : 0)
+                          }
+                          r="3"
+                          fill={bot.statusColor}
+                        />
+
+                        {/* Robot ID Label */}
+                        <text
+                          x={bx}
+                          y={by - 18}
+                          fill="#17242B"
+                          fontSize="9"
+                          fontFamily="monospace"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                        >
                           {bot.name}
+                        </text>
+
+                        {/* Status Dot */}
+                        <text
+                          x={bx}
+                          y={by + 24}
+                          fill={bot.statusColor}
+                          fontSize="7.5"
+                          fontFamily="monospace"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                        >
+                          ● {bot.status}
                         </text>
                       </g>
                     );
                   })}
                 </svg>
+
+                {/* Map Bottom Legend */}
+                <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 text-[10px] font-mono text-[#4B6370] bg-white/90 px-3 py-1.5 rounded-lg border border-[#E8EDF0]">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-0.5 bg-[#2496D2]" />
+                      <span>Current Path</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-0.5 border-t border-dashed border-[#168AAD]" />
+                      <span>Alternative Path</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-0.5 bg-[#2EC4C9]" />
+                      <span>D* Lite Replanned</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#F2A93B]" />
+                      <span>Intersection Conflict</span>
+                    </span>
+                  </div>
+
+                  <span className="text-[#168AAD] font-semibold">
+                    INSPECTING: {selectedRobot.name}
+                  </span>
+                </div>
               </div>
 
-              {/* Focus Robot Footer Telemetry */}
-              <div className="mt-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-wrap items-center justify-between text-xs font-mono">
-                <div>
-                  <span className="text-slate-400">INSPECTING:</span>{" "}
-                  <strong className="text-white">{selectedRobot.name}</strong>{" "}
-                  <span className="text-cyan-400">({selectedRobot.activeRoute})</span>
+              {/* Edge AI Inline Callout Banner */}
+              <div className="mt-4 p-3.5 rounded-xl bg-[#E8EDF0]/50 border border-[#E8EDF0] flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-3 text-xs font-mono">
+                  <div className="w-8 h-8 rounded-lg bg-[#168AAD] text-white flex items-center justify-center font-bold">
+                    <Cpu className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-[#17242B] block">
+                      DECISION CLOSER TO THE FLEET
+                    </span>
+                    <span className="text-[11px] text-[#4B6370]">
+                      AMR-01 → Local Decision → Edge Node → Fleet Coordination
+                    </span>
+                  </div>
                 </div>
-                <div className="text-slate-400">
-                  SPEED: <span className="text-white">{selectedRobot.speed}</span> | LOAD: <span className="text-white">{selectedRobot.payload}</span>
+
+                <span className="text-[10px] font-mono px-2 py-1 rounded bg-white text-[#168AAD] border border-[#CBD5E1] font-semibold shrink-0">
+                  FAST DDS PEER MESH
+                </span>
+              </div>
+            </main>
+
+            {/* ========================================================= */}
+            {/* 12. ROBOT STATUS PANEL (Right-Side Panel)                 */}
+            {/* ========================================================= */}
+            <aside className="lg:col-span-3 p-4 sm:p-5 bg-[#F8FAFB] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#E8EDF0]">
+                  <h3 className="font-heading font-extrabold text-[#17242B] text-sm">
+                    FLEET STATUS
+                  </h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-[#4B6370] border border-[#E8EDF0]">
+                    5 AMRs SIMULATED
+                  </span>
+                </div>
+
+                {/* 5 Compact Robot Cards */}
+                <div className="space-y-2.5">
+                  {FLEET_ROBOTS.map((bot) => {
+                    const isSelected = selectedRobotId === bot.id;
+                    return (
+                      <div
+                        key={bot.id}
+                        onClick={() => setSelectedRobotId(bot.id)}
+                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-white border-[#168AAD] ring-1 ring-[#168AAD] shadow-sm"
+                            : "bg-white/80 border-[#E8EDF0] hover:bg-white"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-mono font-bold text-xs text-[#17242B]">
+                            {bot.name}
+                          </span>
+                          <span
+                            className="text-[10px] font-mono font-bold flex items-center gap-1"
+                            style={{ color: bot.statusColor }}
+                          >
+                            <span>●</span>
+                            <span>{bot.status}</span>
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-[#4B6370] font-mono truncate mb-2">
+                          Task: {bot.currentTask}
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] font-mono text-[#4B6370] pt-1.5 border-t border-[#E8EDF0]">
+                          <span className="flex items-center gap-1">
+                            <Battery className="w-3.5 h-3.5 text-[#3FA66B]" />
+                            <span>{bot.battery}%</span>
+                          </span>
+                          <span className="text-[10px] text-[#168AAD] font-semibold">
+                            {bot.speed}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Edge Node Telemetry Mini-Card */}
+              <div className="mt-4 pt-3 border-t border-[#E8EDF0] text-[11px] font-mono text-[#4B6370]">
+                <div className="flex items-center justify-between mb-1">
+                  <span>ACTIVE NODE:</span>
+                  <span className="font-bold text-[#17242B]">{selectedRobot.edgeNodeId}</span>
+                </div>
+                <div className="flex items-center justify-between text-[10px]">
+                  <span>RESERVATION STATE:</span>
+                  <span
+                    className={
+                      selectedRobot.conflictState === "conflict_detected"
+                        ? "text-[#F2A93B] font-bold"
+                        : "text-[#3FA66B]"
+                    }
+                  >
+                    {selectedRobot.conflictState === "conflict_detected"
+                      ? "WAITING FOR IX-04"
+                      : "ROUTE CLEAR"}
+                  </span>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          {/* ========================================================= */}
+          {/* LOWER DASHBOARD SECTIONS (Tasks, Events, D* Lite, Arch)   */}
+          {/* ========================================================= */}
+          <div className="border-t border-[#E8EDF0] bg-white p-5 sm:p-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 13. TASK MANAGEMENT */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
+                <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
+                  ACTIVE TASKS
+                </span>
+                <span className="text-[10px] font-mono text-[#4B6370]">
+                  SIM QUEUE
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left font-mono text-xs">
+                  <thead>
+                    <tr className="text-[10px] text-[#4B6370] border-b border-[#E8EDF0]">
+                      <th className="pb-1 font-semibold">ROBOT</th>
+                      <th className="pb-1 font-semibold">TASK</th>
+                      <th className="pb-1 font-semibold">FROM → TO</th>
+                      <th className="pb-1 font-semibold">STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E8EDF0] text-[11px]">
+                    {ACTIVE_TASKS.map((t) => (
+                      <tr key={t.id} className="hover:bg-[#F3F6F8]">
+                        <td className="py-2 font-bold text-[#17242B]">{t.robot}</td>
+                        <td className="py-2 text-[#4B6370]">{t.task}</td>
+                        <td className="py-2 text-[#4B6370] text-[10px]">
+                          {t.source} → {t.destination}
+                        </td>
+                        <td className="py-2">
+                          <span
+                            className="font-semibold text-[10px]"
+                            style={{ color: t.statusColor }}
+                          >
+                            {t.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 14. CONFLICT MONITOR / COORDINATION EVENTS */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
+                <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
+                  COORDINATION EVENTS
+                </span>
+                <span className="text-[10px] font-mono text-[#F2A93B] font-bold">
+                  ● LIVE STREAM
+                </span>
+              </div>
+
+              <div className="space-y-2 font-mono text-xs max-h-48 overflow-y-auto">
+                {COORDINATION_EVENTS.map((evt) => (
+                  <div
+                    key={evt.id}
+                    className="p-2 rounded-lg bg-[#F8FAFB] border border-[#E8EDF0] text-[11px]"
+                  >
+                    <div className="flex items-center justify-between text-[10px] text-[#4B6370] mb-0.5">
+                      <span className="font-bold text-[#17242B]">{evt.timestamp}</span>
+                      <span className="text-[#168AAD]">{evt.robot}</span>
+                    </div>
+                    <p className="text-[#17242B] leading-tight text-[11px]">
+                      {evt.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 15. DYNAMIC PATH PLANNING (D* Lite Visualizer) */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
+                <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
+                  D* LITE — PATH PLANNER
+                </span>
+                <span className="text-[10px] font-mono text-[#168AAD] font-semibold">
+                  INCREMENTAL
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#F8FAFB] border border-[#E8EDF0] space-y-2 font-mono text-xs">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-[#4B6370]">Original route:</span>
+                  <span className="text-[#2496D2] font-semibold">Dock-1 → Corridor-2</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-[#F2A93B]">Obstacle detected:</span>
+                  <span className="text-[#F2A93B] font-bold">Corridor-2 Blocked</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-[#3FA66B]">Replanned route:</span>
+                  <span className="text-[#3FA66B] font-bold">Bypass South → Dest</span>
+                </div>
+
+                <div className="pt-2 border-t border-[#E8EDF0] text-[10px] text-[#4B6370]">
+                  <span>Vertex costs updated locally without full graph restart.</span>
                 </div>
               </div>
             </div>
 
-            {/* Right 4 Cols: Simulation Events Log */}
-            <div className="lg:col-span-4 p-6 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <Terminal className="w-4 h-4 text-cyan-400" />
-                    <h3 className="font-heading font-bold text-white text-base">
-                      Simulation Events Log
-                    </h3>
-                  </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                    REAL-TIME FEED
-                  </span>
-                </div>
-
-                {/* Filter Pills */}
-                <div className="flex items-center gap-2 mb-4 text-[10px] font-mono">
-                  {["all", "reroute", "conflict", "yield"].map((flt) => (
-                    <button
-                      key={flt}
-                      onClick={() => setFilterEvent(flt)}
-                      className={`px-2 py-1 rounded cursor-pointer transition-all uppercase ${
-                        filterEvent === flt
-                          ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400"
-                          : "bg-slate-900 text-slate-400 hover:text-white"
-                      }`}
-                    >
-                      {flt}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Events List */}
-                <div className="space-y-3 font-mono text-xs">
-                  {filteredEvents.map((evt) => (
-                    <div
-                      key={evt.id}
-                      className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/30 transition-all"
-                    >
-                      <div className="flex items-center justify-between mb-1 text-[10px]">
-                        <span className="text-cyan-400 font-bold">{evt.robotId}</span>
-                        <span className="text-slate-500">{evt.time}</span>
-                      </div>
-                      <p className="text-slate-300 text-[11px] leading-relaxed">
-                        {evt.message}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+            {/* 16. SYSTEM ARCHITECTURE PANEL */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
+                <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
+                  SYSTEM ARCHITECTURE
+                </span>
+                <span className="text-[10px] font-mono text-[#168AAD]">
+                  TOPOLOGY
+                </span>
               </div>
 
-              {/* Bottom Notice */}
-              <div className="mt-6 pt-3 border-t border-slate-800 text-[11px] font-mono text-slate-400 italic">
-                *All events are generated from the Gazebo simulation runtime. No fake benchmark statistics are published.
+              <div className="space-y-1.5 font-mono text-[10px] text-[#17242B]">
+                <div className="p-1.5 rounded bg-[#E8EDF0] flex items-center justify-between font-semibold">
+                  <span>AMRs (5 UNITS)</span>
+                  <span className="text-[#168AAD]">SIMULATED</span>
+                </div>
+                <div className="text-center text-[#4B6370]">↓ ROS 2 / Fast DDS</div>
+                <div className="p-1.5 rounded bg-[#E8EDF0] text-center font-semibold">
+                  Distributed Coordination & D* Lite
+                </div>
+                <div className="text-center text-[#4B6370]">↓ Gazebo + React Dashboard</div>
+                <div className="p-2 rounded bg-amber-50 border border-amber-300 text-amber-900 flex items-center justify-between font-bold">
+                  <span>Raspberry Pi</span>
+                  <span className="text-[9px] bg-amber-200/80 px-1.5 py-0.5 rounded">
+                    TARGET EDGE HARDWARE
+                  </span>
+                </div>
               </div>
             </div>
           </div>

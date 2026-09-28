@@ -5,47 +5,56 @@
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* Global Robotics & Edge-AI Design Tokens */
-  --color-bg-primary: #F8FAFC;
-  --color-bg-secondary: #F1F5F9;
-  --color-surface: #FFFFFF;
+  /* Strict Warehouse + Autonomous Robotics Color Palette */
+  --color-wh-bg: #F3F6F8;
+  --color-wh-surface: #FFFFFF;
+  --color-wh-gray-light: #E8EDF0;
+  --color-wh-graphite: #17242B;
+  --color-wh-navy: #0B2733;
 
-  --color-robot-blue: #0284C7;
-  --color-robot-blue-dark: #0369A1;
-  --color-robot-cyan: #06B6D4;
-  --color-navy: #0F172A;
-  --color-navy-dark: #0A0F1D;
+  --color-wh-blue: #168AAD;
+  --color-wh-cyan: #2EC4C9;
+  --color-wh-path: #2496D2;
 
-  --color-text-primary: #0F172A;
-  --color-text-secondary: #475569;
+  /* Strict Functional Status Colors Only */
+  --color-wh-warning: #F2A93B;
+  --color-wh-danger: #E05252;
+  --color-wh-success: #3FA66B;
 
-  --color-border-subtle: rgba(15, 23, 42, 0.08);
-  --color-border-hover: rgba(2, 132, 199, 0.40);
+  --color-text-primary: #17242B;
+  --color-text-secondary: #4B6370;
+
+  --color-border-subtle: rgba(23, 36, 43, 0.08);
+  --color-border-hover: rgba(22, 138, 173, 0.40);
 }
 
 :root {
-  --bg-primary: #F8FAFC;
-  --bg-secondary: #F1F5F9;
+  --bg-primary: #F3F6F8;
+  --bg-secondary: #E8EDF0;
   --surface: #FFFFFF;
 
-  --robot-blue: #0284C7;
-  --robot-blue-dark: #0369A1;
-  --robot-cyan: #06B6D4;
-  --navy: #0F172A;
-  --navy-dark: #0A0F1D;
+  --graphite: #17242B;
+  --navy: #0B2733;
 
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
+  --tech-blue: #168AAD;
+  --tech-cyan: #2EC4C9;
+  --path-blue: #2496D2;
 
-  --border: rgba(15, 23, 42, 0.09);
-  --border-hover: rgba(2, 132, 199, 0.45);
+  --status-warning: #F2A93B;
+  --status-danger: #E05252;
+  --status-success: #3FA66B;
 
-  --radius-card: 16px;
-  --radius-btn: 10px;
+  --text-primary: #17242B;
+  --text-secondary: #4B6370;
 
-  --shadow-card: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
-  --shadow-card-hover: 0 12px 32px -6px rgba(2, 132, 199, 0.16);
-  --shadow-btn-glow: 0 0 20px rgba(2, 132, 199, 0.35);
+  --border: rgba(23, 36, 43, 0.09);
+  --border-hover: rgba(22, 138, 173, 0.45);
+
+  --radius-card: 14px;
+  --radius-btn: 8px;
+
+  --shadow-card: 0 2px 14px -3px rgba(23, 36, 43, 0.05);
+  --shadow-card-hover: 0 10px 28px -5px rgba(22, 138, 173, 0.15);
 }
 
 @layer base {
@@ -66,7 +75,7 @@
 
   h1, h2, h3, h4, .font-heading {
     font-family: var(--font-display);
-    color: var(--navy);
+    color: var(--graphite);
     letter-spacing: -0.02em;
   }
 
@@ -80,34 +89,32 @@
 }
 
 /* ========================================================= */
-/* UNIFIED SHAZAM CARD SYSTEM (Robotics & Edge-AI Edition)   */
+/* INDUSTRIAL COMMAND CENTER CARD SYSTEM                     */
 /* ========================================================= */
 .shazam-card {
   background-color: #FFFFFF;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.09);
-  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
-  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 14px;
+  border: 1px solid rgba(23, 36, 43, 0.09);
+  box-shadow: 0 2px 14px -3px rgba(23, 36, 43, 0.05);
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .shazam-card:hover {
-  border-color: rgba(2, 132, 199, 0.45);
-  box-shadow: 0 14px 34px -6px rgba(2, 132, 199, 0.16);
-  transform: translateY(-2px);
+  border-color: rgba(22, 138, 173, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(22, 138, 173, 0.12);
 }
 
-.shazam-card-dark {
-  background-color: #0F172A;
-  border-radius: 16px;
-  border: 1px solid rgba(6, 182, 212, 0.18);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+/* Command Header / Sidebar Surfaces */
+.bg-command-graphite {
+  background-color: #17242B;
 }
 
-.shazam-card-dark:hover {
-  border-color: rgba(6, 182, 212, 0.5);
-  box-shadow: 0 12px 40px rgba(6, 182, 212, 0.15);
-  transform: translateY(-2px);
+.bg-command-navy {
+  background-color: #0B2733;
+}
+
+.bg-warehouse-floor {
+  background-color: #F8FAFB;
 }
 
 /* ========================================================= */
@@ -118,23 +125,23 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.35rem;
-  border-radius: 10px;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
   font-family: var(--font-mono);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.025em;
-  background-color: #0284C7;
+  background-color: #168AAD;
   color: #FFFFFF;
   border: 1px solid transparent;
-  box-shadow: 0 3px 12px rgba(2, 132, 199, 0.28);
-  transition: all 250ms ease;
+  box-shadow: 0 2px 10px rgba(22, 138, 173, 0.25);
+  transition: all 200ms ease;
   cursor: pointer;
 }
 
 .shazam-btn-primary:hover {
-  background-color: #0369A1;
-  box-shadow: 0 0 24px rgba(2, 132, 199, 0.45);
+  background-color: #0F6E8C;
+  box-shadow: 0 0 20px rgba(22, 138, 173, 0.4);
   transform: translateY(-1px);
 }
 
@@ -143,131 +150,72 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.35rem;
-  border-radius: 10px;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
   font-family: var(--font-mono);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.025em;
-  background-color: transparent;
-  color: #0284C7;
-  border: 1px solid rgba(2, 132, 199, 0.35);
-  transition: all 250ms ease;
+  background-color: #FFFFFF;
+  color: #168AAD;
+  border: 1px solid rgba(22, 138, 173, 0.35);
+  transition: all 200ms ease;
   cursor: pointer;
 }
 
 .shazam-btn-secondary:hover {
-  background-color: #F0F9FF;
-  border-color: #0284C7;
-  color: #0369A1;
+  background-color: #E8EDF0;
+  border-color: #168AAD;
+  color: #0B2733;
   transform: translateY(-1px);
 }
 
-/* Badges */
+/* Subtle Industrial Badges */
 .shazam-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 9999px;
-  background-color: #F0F9FF;
-  border: 1px solid rgba(6, 182, 212, 0.35);
-  color: #0284C7;
+  background-color: #E8EDF0;
+  border: 1px solid rgba(22, 138, 173, 0.3);
+  color: #168AAD;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
-.shazam-badge-sim {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
-  background-color: rgba(6, 182, 212, 0.12);
-  border: 1px solid rgba(6, 182, 212, 0.35);
-  color: #06B6D4;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-/* Warehouse Floor Grid Texture */
-.warehouse-grid {
+/* Warehouse Floor Grid Patterns */
+.warehouse-grid-light {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(23, 36, 43, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 36, 43, 0.05) 1px, transparent 1px);
 }
 
-.warehouse-grid-dark {
-  background-size: 36px 36px;
+.warehouse-grid-subtle {
+  background-size: 40px 40px;
   background-image: 
-    linear-gradient(to right, rgba(6, 182, 212, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(6, 182, 212, 0.07) 1px, transparent 1px);
+    linear-gradient(to right, rgba(22, 138, 173, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 138, 173, 0.06) 1px, transparent 1px);
 }
 
-/* Background Flow Presets */
-.bg-robotics-primary {
-  background-color: #F8FAFC;
-}
-
-.bg-robotics-secondary {
-  background-color: #F1F5F9;
-}
-
-.bg-robotics-subtle-gradient {
-  background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 50%, #F8FAFC 100%);
-}
-
-.bg-robotics-feature-gradient {
-  background: linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 50%, #E0F2FE 100%);
-}
-
-/* Strategic Robotics Deep Navy (Hero, Video, Footer, Simulator) */
-.bg-robotics-depth {
-  background: radial-gradient(circle at 50% 0%, #11284a 0%, #0F172A 50%, #0A0F1D 100%);
-}
-
-.bg-robotics-depth-alt {
-  background: linear-gradient(180deg, #0A0F1D 0%, #0F172A 50%, #0A0F1D 100%);
-}
-
-/* Subtle pulse drift */
-@keyframes tech-drift {
-  0% {
-    transform: translateY(0px) translateX(0px);
-  }
-  50% {
-    transform: translateY(-5px) translateX(3px);
-  }
-  100% {
-    transform: translateY(0px) translateX(0px);
-  }
-}
-
-.animate-tech-drift {
-  animation: tech-drift 7s ease-in-out infinite;
-}
-
-/* Custom Robotics Scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F8FAFC;
+  background: #F3F6F8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0284C7;
+  background: #168AAD;
   border-radius: 4px;
-  border: 1px solid #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0F172A;
+  background: #17242B;
 }

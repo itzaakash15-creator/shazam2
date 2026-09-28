@@ -23,7 +23,7 @@ import { Footer } from "./components/sections/Footer";
 
 export function App() {
   return (
-    <div className="relative min-h-screen bg-[#F8FAFC] text-[#0F172A] overflow-x-hidden selection:bg-cyan-500/30 selection:text-[#0F172A]">
+    <div className="relative min-h-screen bg-[#F3F6F8] text-[#17242B] overflow-x-hidden selection:bg-[#2EC4C9]/30 selection:text-[#17242B]">
       {/* Top Scroll Progress Indicator */}
       <ScrollProgress />
 
