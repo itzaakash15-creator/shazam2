@@ -17,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { name: "Architecture", href: "#architecture" },
   { name: "Tech", href: "#technology" },
   { name: "Dashboard", href: "#dashboard" },
+  { name: "Video", href: "#video" },
   { name: "Case Study", href: "#case-study" },
   { name: "Team", href: "#team" },
 ];

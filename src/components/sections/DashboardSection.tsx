@@ -28,6 +28,8 @@ import {
   HardDrive,
   Eye,
   Sliders,
+  ExternalLink,
+  Video,
 } from "lucide-react";
 
 export const DashboardSection: React.FC = () => {
@@ -36,6 +38,19 @@ export const DashboardSection: React.FC = () => {
   const [isSimRunning, setIsSimRunning] = useState<boolean>(true);
   const [showAltPaths, setShowAltPaths] = useState<boolean>(true);
   const [simStep, setSimStep] = useState<number>(0);
+
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+    if (tabId === "tasks") {
+      document.getElementById("dashboard-tasks")?.scrollIntoView({ behavior: "smooth" });
+    } else if (tabId === "path") {
+      document.getElementById("dashboard-path")?.scrollIntoView({ behavior: "smooth" });
+    } else if (tabId === "conflicts") {
+      document.getElementById("dashboard-conflicts")?.scrollIntoView({ behavior: "smooth" });
+    } else if (tabId === "system") {
+      document.getElementById("dashboard-system")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   // Subtle live position pulse for the 5 AMRs
   useEffect(() => {
@@ -99,8 +114,17 @@ export const DashboardSection: React.FC = () => {
               <span>SMART WAREHOUSE CONTROL</span>
             </div>
 
-            {/* Right System Status */}
-            <div className="flex items-center gap-3 font-mono text-xs">
+            {/* Right System Status & Video Action */}
+            <div className="flex items-center gap-2.5 font-mono text-xs">
+              <button
+                onClick={() => setActiveTab(activeTab === "video" ? "map" : "video")}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#168AAD] hover:bg-[#2496D2] text-white text-[11px] font-mono font-bold transition-all shadow-xs cursor-pointer group"
+                title="Watch YouTube Explanation Video"
+              >
+                <Play className="w-3 h-3 fill-current group-hover:scale-110 transition-transform" />
+                <span>{activeTab === "video" ? "LIVE MAP" : "EXPLANATION VIDEO"}</span>
+              </button>
+
               <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B2733] border border-[#3FA66B]/50 text-[#3FA66B] text-[11px] font-bold">
                 <span className="w-2 h-2 rounded-full bg-[#3FA66B] animate-pulse" />
                 <span>● SYSTEM ONLINE</span>
@@ -184,9 +208,9 @@ export const DashboardSection: React.FC = () => {
                 </div>
 
                 {[
-                  { id: "overview", label: "OVERVIEW", icon: Activity },
-                  { id: "fleet", label: "FLEET", icon: Radio },
                   { id: "map", label: "WAREHOUSE MAP", icon: Compass },
+                  { id: "video", label: "EXPLANATION VIDEO", icon: Play, isHighlight: true },
+                  { id: "fleet", label: "FLEET", icon: Radio },
                   { id: "tasks", label: "TASKS", icon: Boxes },
                   { id: "path", label: "PATH PLANNING", icon: RefreshCw },
                   { id: "conflicts", label: "CONFLICTS", icon: ShieldAlert },
@@ -197,15 +221,30 @@ export const DashboardSection: React.FC = () => {
                   return (
                     <button
                       key={item.id}
-                      onClick={() => setActiveTab(item.id)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all text-left cursor-pointer ${
+                      onClick={() => handleTabClick(item.id)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all text-left cursor-pointer ${
                         isActive
                           ? "bg-[#168AAD] text-white font-bold shadow-xs"
+                          : item.isHighlight
+                          ? "text-[#2EC4C9] hover:bg-white/10 hover:text-white"
                           : "text-slate-300 hover:bg-white/10 hover:text-white"
                       }`}
                     >
-                      <Icon className="w-3.5 h-3.5 shrink-0 text-[#2EC4C9]" />
-                      <span>{item.label}</span>
+                      <div className="flex items-center gap-2.5">
+                        <Icon
+                          className={`w-3.5 h-3.5 shrink-0 ${
+                            item.isHighlight && !isActive
+                              ? "text-[#2EC4C9] animate-pulse"
+                              : "text-[#2EC4C9]"
+                          }`}
+                        />
+                        <span>{item.label}</span>
+                      </div>
+                      {item.isHighlight && (
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#2EC4C9]/20 text-[#2EC4C9] font-bold">
+                          HD
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -227,35 +266,146 @@ export const DashboardSection: React.FC = () => {
             {/* 11. MAIN WAREHOUSE MAP (Center Area)                      */}
             {/* ========================================================= */}
             <main className="lg:col-span-7 p-4 sm:p-6 bg-white flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#E8EDF0]">
-              {/* Map Header & Controls */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[#E8EDF0] text-xs font-mono">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base sm:text-lg font-heading font-extrabold text-[#17242B]">
-                      LIVE WAREHOUSE MAP
-                    </h3>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E8EDF0] text-[#168AAD] font-bold uppercase">
-                      SIMULATION
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-[#4B6370]">
-                    Top-down operational twin with D* Lite active path lines
-                  </span>
-                </div>
+              {activeTab === "video" ? (
+                <div className="flex-1 flex flex-col justify-between">
+                  {/* Video View Header */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[#E8EDF0] text-xs font-mono">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base sm:text-lg font-heading font-extrabold text-[#17242B]">
+                          PROJECT EXPLANATION & DEMO VIDEO
+                        </h3>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#168AAD]/15 text-[#168AAD] border border-[#168AAD]/30 font-bold uppercase">
+                          OFFICIAL WALKTHROUGH
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-[#4B6370]">
+                        SIH26123: Edge AI Based Distributed Fleet Coordination for Autonomous Mobile Robots
+                      </span>
+                    </div>
 
-                {/* Map Control Buttons */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowAltPaths(!showAltPaths)}
-                    className={`px-2.5 py-1 rounded text-[11px] font-mono border transition-all cursor-pointer ${
-                      showAltPaths
-                        ? "bg-[#E8EDF0] text-[#168AAD] border-[#168AAD]/40 font-semibold"
-                        : "bg-white text-slate-500 border-slate-200"
-                    }`}
-                    title="Toggle Alternative & Replanned Paths"
-                  >
-                    ALT PATHS
-                  </button>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href="https://youtu.be/lpk_R3frb90?si=V1cL-3aA0iu656at"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E8EDF0] hover:bg-[#CBD5E1] text-[#17242B] font-mono text-[11px] font-semibold transition-all border border-[#CBD5E1]"
+                      >
+                        <span>Open on YouTube</span>
+                        <ExternalLink className="w-3.5 h-3.5 text-[#168AAD]" />
+                      </a>
+                      <button
+                        onClick={() => setActiveTab("map")}
+                        className="px-3 py-1.5 rounded-lg bg-[#168AAD] hover:bg-[#2496D2] text-white font-mono text-[11px] font-semibold transition-all shadow-xs cursor-pointer"
+                      >
+                        Back to Live Map
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* YouTube Player Frame */}
+                  <div className="relative rounded-2xl overflow-hidden border border-[#0B2733] bg-[#0B2733] shadow-md aspect-video w-full flex items-center justify-center">
+                    <iframe
+                      src="https://www.youtube.com/embed/lpk_R3frb90?rel=0"
+                      title="SIH26123 Explanation Video - Team SHAZAM"
+                      className="w-full h-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+
+                  {/* Video Highlights / Key Chapters */}
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                    <div className="p-3 rounded-xl bg-[#F8FAFB] border border-[#E8EDF0]">
+                      <span className="text-[10px] text-[#168AAD] font-bold block mb-1">
+                        01 // THE CHALLENGE
+                      </span>
+                      <p className="text-[11px] text-[#4B6370] leading-snug">
+                        Bottlenecks of centralized servers and latency vulnerabilities during peak warehouse hours.
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-[#F8FAFB] border border-[#E8EDF0]">
+                      <span className="text-[10px] text-[#168AAD] font-bold block mb-1">
+                        02 // EDGE COORDINATION
+                      </span>
+                      <p className="text-[11px] text-[#4B6370] leading-snug">
+                        Peer-to-peer Fast DDS heartbeat state exchange & D* Lite dynamic heuristic path rerouting.
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-[#F8FAFB] border border-[#E8EDF0]">
+                      <span className="text-[10px] text-[#168AAD] font-bold block mb-1">
+                        03 // GAZEBO VALIDATION
+                      </span>
+                      <p className="text-[11px] text-[#4B6370] leading-snug">
+                        Real-time 5 AMR collision avoidance, intersection negotiation, and zero-deadlock resolution.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Edge AI Inline Callout Banner */}
+                  <div className="mt-4 p-3.5 rounded-xl bg-[#E8EDF0]/50 border border-[#E8EDF0] flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 text-xs font-mono">
+                      <div className="w-8 h-8 rounded-lg bg-[#168AAD] text-white flex items-center justify-center font-bold">
+                        <Cpu className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-[#17242B] block">
+                          DECISION CLOSER TO THE FLEET
+                        </span>
+                        <span className="text-[11px] text-[#4B6370]">
+                          AMR-01 → Local Decision → Edge Node → Fleet Coordination
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setActiveTab("map")}
+                      className="text-[11px] font-mono px-3 py-1.5 rounded-lg bg-[#168AAD] hover:bg-[#2496D2] text-white font-semibold transition-all shadow-xs cursor-pointer shrink-0"
+                    >
+                      Return to Operational Map →
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Map Header & Controls */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[#E8EDF0] text-xs font-mono">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base sm:text-lg font-heading font-extrabold text-[#17242B]">
+                          LIVE WAREHOUSE MAP
+                        </h3>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E8EDF0] text-[#168AAD] font-bold uppercase">
+                          SIMULATION
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-[#4B6370]">
+                        Top-down operational twin with D* Lite active path lines
+                      </span>
+                    </div>
+
+                    {/* Map Control Buttons */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setActiveTab("video")}
+                        className="px-2.5 py-1 rounded text-[11px] font-mono border border-[#168AAD]/40 bg-[#168AAD]/10 hover:bg-[#168AAD]/20 text-[#168AAD] transition-all cursor-pointer flex items-center gap-1 font-semibold"
+                        title="Watch YouTube Explanation Video"
+                      >
+                        <Play className="w-3 h-3 fill-current text-[#168AAD]" />
+                        <span>VIDEO DEMO</span>
+                      </button>
+
+                      <button
+                        onClick={() => setShowAltPaths(!showAltPaths)}
+                        className={`px-2.5 py-1 rounded text-[11px] font-mono border transition-all cursor-pointer ${
+                          showAltPaths
+                            ? "bg-[#E8EDF0] text-[#168AAD] border-[#168AAD]/40 font-semibold"
+                            : "bg-white text-slate-500 border-slate-200"
+                        }`}
+                        title="Toggle Alternative & Replanned Paths"
+                      >
+                        ALT PATHS
+                      </button>
 
                   <button
                     onClick={() => setIsSimRunning(!isSimRunning)}
@@ -622,6 +772,8 @@ export const DashboardSection: React.FC = () => {
                   FAST DDS PEER MESH
                 </span>
               </div>
+                </>
+              )}
             </main>
 
             {/* ========================================================= */}
@@ -713,7 +865,7 @@ export const DashboardSection: React.FC = () => {
           {/* ========================================================= */}
           <div className="border-t border-[#E8EDF0] bg-white p-5 sm:p-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* 13. TASK MANAGEMENT */}
-            <div className="space-y-3">
+            <div id="dashboard-tasks" className="space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
                 <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
                   ACTIVE TASKS
@@ -757,7 +909,7 @@ export const DashboardSection: React.FC = () => {
             </div>
 
             {/* 14. CONFLICT MONITOR / COORDINATION EVENTS */}
-            <div className="space-y-3">
+            <div id="dashboard-conflicts" className="space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
                 <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
                   COORDINATION EVENTS
@@ -786,7 +938,7 @@ export const DashboardSection: React.FC = () => {
             </div>
 
             {/* 15. DYNAMIC PATH PLANNING (D* Lite Visualizer) */}
-            <div className="space-y-3">
+            <div id="dashboard-path" className="space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
                 <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
                   D* LITE — PATH PLANNER
@@ -817,7 +969,7 @@ export const DashboardSection: React.FC = () => {
             </div>
 
             {/* 16. SYSTEM ARCHITECTURE PANEL */}
-            <div className="space-y-3">
+            <div id="dashboard-system" className="space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-[#E8EDF0]">
                 <span className="font-heading font-extrabold text-xs text-[#17242B] tracking-wider uppercase">
                   SYSTEM ARCHITECTURE

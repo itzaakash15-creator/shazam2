@@ -1,7 +1,7 @@
 import React from "react";
 import { PROJECT_DATA } from "../../data/project";
 import { HeroWarehouseCanvas } from "../ui/HeroWarehouseCanvas";
-import { ArrowRight, ChevronRight, Cpu, Network, ShieldCheck, Box } from "lucide-react";
+import { ArrowRight, ChevronRight, Cpu, Network, ShieldCheck, Box, Play } from "lucide-react";
 
 export const HeroSection: React.FC = () => {
   return (
@@ -90,6 +90,14 @@ export const HeroSection: React.FC = () => {
             >
               <span>View Warehouse Dashboard</span>
               <ChevronRight className="w-4 h-4 text-[#2EC4C9]" />
+            </a>
+
+            <a
+              href="#video"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg font-mono font-semibold text-xs sm:text-sm text-[#2EC4C9] bg-[#0B2733]/90 hover:bg-[#0B2733] border border-[#2EC4C9]/50 hover:border-[#2EC4C9] transition-all backdrop-blur-sm shadow-sm"
+            >
+              <Play className="w-3.5 h-3.5 fill-current text-[#2EC4C9]" />
+              <span>Watch Video</span>
             </a>
           </div>
 

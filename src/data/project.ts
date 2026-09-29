@@ -47,7 +47,7 @@ export const PROJECT_DATA: ProjectData = {
     "Enabling multiple autonomous robots to coordinate, adapt and navigate intelligently at the edge.",
   fullDescription:
     "A distributed Edge-AI coordination framework where Autonomous Mobile Robots (AMRs) share local state and make decentralized navigation decisions inside smart warehouses—eliminating single-point centralized bottlenecks and dynamically replanning routes using D* Lite.",
-  youtubeVideoUrl: "", // Configurable: empty string per specifications; when set, opens YouTube in new tab
+  youtubeVideoUrl: "https://youtu.be/lpk_R3frb90?si=V1cL-3aA0iu656at",
   heroTags: [
     "5 AMRs FLEET SIMULATION",
     "DECENTRALIZED EDGE COORDINATION",
@@ -60,9 +60,15 @@ export const PROJECT_DATA: ProjectData = {
   resources: [
     {
       label: "GitHub Repository",
-      url: "https://github.com",
+      url: "https://github.com/itzaakash15-creator/shazam2",
       isAvailable: true,
       type: "github",
+    },
+    {
+      label: "Explanation Video",
+      url: "https://youtu.be/lpk_R3frb90?si=V1cL-3aA0iu656at",
+      isAvailable: true,
+      type: "simulation",
     },
     {
       label: "Simulation Dashboard",
